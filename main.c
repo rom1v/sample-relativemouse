@@ -51,7 +51,23 @@ int main() {
                 // Toggle relative mode on Alt
                 if (event.key.keysym.sym == SDLK_LALT) {
                     SDL_bool new_mode = !SDL_GetRelativeMouseMode();
-                    SDL_SetRelativeMouseMode(new_mode);
+                    if (new_mode) {
+                        int mouse_x, mouse_y;
+                        SDL_GetGlobalMouseState(&mouse_x, &mouse_y);
+
+                        int x, y, w, h;
+                        SDL_GetWindowPosition(window, &x, &y);
+                        SDL_GetWindowSize(window, &w, &h);
+
+                        SDL_SetRelativeMouseMode(SDL_TRUE);
+
+                        if (mouse_x < x || mouse_x >= x + w ||
+                                mouse_y < y || mouse_y >= y + h) {
+                            SDL_WarpMouseInWindow(window, w/2, h/2);
+                        }
+                    } else {
+                        SDL_SetRelativeMouseMode(SDL_FALSE);
+                    }
                     printf("switch relative mode to %s\n",
                            new_mode ? "true" : "false");
                 }
